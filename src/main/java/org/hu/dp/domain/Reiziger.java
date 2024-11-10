@@ -9,6 +9,7 @@ public class Reiziger {
     private String tussenvoegsel = null;
     private String achternaam;
     private Date geboortedatum;
+    private Adres adres;
 
     public Reiziger(){
     }
@@ -60,6 +61,14 @@ public class Reiziger {
 
     public void setAchternaam(String achternaam) {
         this.achternaam = achternaam;
+    }
+
+    public Adres getAdres() {
+        return this.adres;
+    }
+
+    public void setAdres(Adres adres) {
+        this.adres = adres;
     }
 
     public Date getGeboortedatum() {

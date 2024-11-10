@@ -1,8 +1,6 @@
 package org.hu.dp;
 
-import org.hu.dp.domain.Reiziger;
-import org.hu.dp.domain.ReizigerDAO;
-import org.hu.dp.domain.ReizigerDAOPsql;
+import org.hu.dp.domain.*;
 
 import java.sql.*;
 import java.util.List;
@@ -74,8 +72,41 @@ public class Main {
         reizigers = reizigerDAO.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
 
+        reizigerDAO.delete(wopke);
+        reizigerDAO.delete(sietske);
+
         System.out.println("[TEST] Zoek reiziger(s) o.b.v geboortedatum: " + (reizigerDAO.findByGbdatum("2002-12-03")));
     }
+
+    private static void testAdres(AdresDAO adresDAO) throws SQLException {
+        System.out.println("\n---------- Test AdresDAO -------------");
+
+
+        Reiziger wopke = new Reiziger(13, "H", "", "De Jonge", java.sql.Date.valueOf("1980-04-20"));
+        Adres adr1 = new Adres(6, "8834IK", "60", "Japstraat", "Gouda", wopke);
+        int aantal_adres = adresDAO.findAll().size();
+        wopke.setAdres(adr1);
+        adresDAO.getRdao().save(wopke);
+        adresDAO.save(adr1);
+        System.out.println("[Test] Eerst " + aantal_adres + " adressen na adresDAO.save zijn er " +adresDAO.findAll().size() + " adressen\n" );
+
+        Adres adr2 = new Adres(6, "8451DF", "78", "Hogeweg", "Maastricht", wopke);
+        System.out.println("[TEST] update, adres: " + adresDAO.findByReiziger(wopke));
+        wopke.setAdres(adr2);
+        adresDAO.update(adr2);
+        System.out.println("na update: " + adresDAO.findByReiziger(wopke));
+
+        System.out.println("\n[TEST] delete, eerst " + adresDAO.findAll().size() + " adressen" );
+        adresDAO.delete(adr1);
+        System.out.println("Na adao.delete: " + adresDAO.findAll().size() + " adressen\n");
+
+        System.out.println("overzicht van alle adressen na de tests:");
+        for (Adres adres : adresDAO.findAll()) {
+            System.out.println(adres);
+        }
+        adresDAO.getRdao().delete(wopke);
+    }
+
 
 
     public static void main(String[] args) throws SQLException {
@@ -85,12 +116,17 @@ public class Main {
             System.out.println("Er ging iets mis met het maken van de connectie..." + e);
         }
 
-        //kan in try en catch
-        //P1
-        //printReizigers(connection);
-
-        ReizigerDAO reizigerDAO = new ReizigerDAOPsql(connection);
-        testReizigerDAO(reizigerDAO);
+        ReizigerDAOPsql reizigerDAO = new ReizigerDAOPsql(connection);
+        AdresDAOPsql adresDAO = new AdresDAOPsql(connection);
+        reizigerDAO.setAdresDAO(adresDAO);
+        adresDAO.setReizigerDAO(reizigerDAO);
+        try {
+            testReizigerDAO(reizigerDAO);
+            testAdres(adresDAO);
+        } catch (SQLException e) {
+            System.out.println("Er ging iets fout bij het testen" );
+            e.printStackTrace();
+        }
 
         try {
             closeConnection();

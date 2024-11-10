@@ -8,6 +8,8 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
     public Connection conn;
 
+    private AdresDAO adresDAO;
+
     public ReizigerDAOPsql(Connection conn) {
         this.conn = conn;
     }
@@ -116,4 +118,6 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         statement.close();
         return listReiziger;
     }
+    public void setAdresDAO(AdresDAO adresDAO) {this.adresDAO = adresDAO;}
+    public AdresDAO getAdresDAO() {return adresDAO;}
 }
