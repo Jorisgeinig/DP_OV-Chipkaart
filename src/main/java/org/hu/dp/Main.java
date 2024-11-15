@@ -107,6 +107,53 @@ public class Main {
         adresDAO.getRdao().delete(wopke);
     }
 
+    private static void testOVChipkaarten(OVChipkaartDAO odao) throws SQLException {
+        System.out.println("\n---------- Test OVChipkaartDAO -------------");
+        // Voorbeeld reiziger om de ovchipkaarten aan te koppelen
+        Reiziger reiziger1 = new Reiziger(10, "K", "", "Kempers", java.sql.Date.valueOf("1995-03-14"));
+        odao.getRdao().save(reiziger1);
+
+        OVChipkaart ov1 = new OVChipkaart(76545, java.sql.Date.valueOf("2021-01-01"), 1, 40.00, 10);
+        OVChipkaart ov2 = new OVChipkaart(84958, java.sql.Date.valueOf("2022-01-01"), 1, 80, 10);
+
+        // Test save van ovchipkaart
+        System.out.println("[TEST] eerst " + odao.findAll().size() + " ovchipkaarten");
+        odao.save(ov1);
+        System.out.println("na odao.save: " + odao.findAll().size() + " ovchipkaarten\n");
+
+        // Koppel de ovchipkaarten aan de reiziger in java
+        List<OVChipkaart> listOV = List.of(ov1, ov2);
+        reiziger1.setOvChipkaartList(listOV);
+
+        // Test update van ovchipkaart
+        System.out.println("[TEST] update, ovchipkaart:\n " + odao.findbyKaartNummer(76545));
+        OVChipkaart ov3 = new OVChipkaart(76545, java.sql.Date.valueOf("2022-01-01"), 2, 50, 10);
+        odao.update(ov3);
+        System.out.println("na update: " + odao.findbyKaartNummer(76545));
+
+        // Test findAll van ovchipkaart
+        System.out.println("\n[TEST] findAll() geeft de volgende OVChipkaarten:\n");
+        for (OVChipkaart ov : odao.findAll()) {
+            System.out.println(ov.toString());
+        }
+        System.out.println();
+
+        // Test findByReiziger van ovchipkaart
+        System.out.println("[TEST] findByReiziger() geeft de volgende OVChipkaarten:");
+        for (OVChipkaart ov : odao.findByReiziger(reiziger1)) {
+            System.out.println(ov.toString());
+        }
+
+        // Test delete van ovchipkaart
+        System.out.println("\n[TEST] delete, eerst " + odao.findAll().size() + " ovchipkaarten" );
+        odao.getRdao().findById(ov1.getReizigerid()).getOvChipkaartList().remove(ov1);
+        odao.delete(ov1);
+        System.out.println("Na odao.delete: " + odao.findAll().size() + " ovchipkaarten\n");
+
+        // delete de aangemaakte reiziger
+        odao.getRdao().delete(reiziger1);
+    }
+
 
 
     public static void main(String[] args) throws SQLException {
@@ -118,11 +165,14 @@ public class Main {
 
         ReizigerDAOPsql reizigerDAO = new ReizigerDAOPsql(connection);
         AdresDAOPsql adresDAO = new AdresDAOPsql(connection);
+        OVChipkaartDAOPsql OvchipkaartDAO = new OVChipkaartDAOPsql(connection);
         reizigerDAO.setAdresDAO(adresDAO);
         adresDAO.setReizigerDAO(reizigerDAO);
+        OvchipkaartDAO.setRdao(reizigerDAO);
         try {
-            testReizigerDAO(reizigerDAO);
-            testAdres(adresDAO);
+//            testReizigerDAO(reizigerDAO);
+//            testAdres(adresDAO);
+            testOVChipkaarten(OvchipkaartDAO);
         } catch (SQLException e) {
             System.out.println("Er ging iets fout bij het testen" );
             e.printStackTrace();

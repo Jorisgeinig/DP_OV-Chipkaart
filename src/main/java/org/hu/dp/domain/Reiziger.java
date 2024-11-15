@@ -2,6 +2,8 @@ package org.hu.dp.domain;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Reiziger {
     private int reiziger_id;
@@ -10,6 +12,7 @@ public class Reiziger {
     private String achternaam;
     private Date geboortedatum;
     private Adres adres;
+    private List<OVChipkaart> ovChipkaartList = new ArrayList<>();
 
     public Reiziger(){
     }
@@ -75,6 +78,13 @@ public class Reiziger {
         return geboortedatum;
     }
 
+    public void setOvChipkaartList(List<OVChipkaart> ovChipkaartList) {
+        this.ovChipkaartList = ovChipkaartList;
+    }
+
+    public List<OVChipkaart> getOvChipkaartList() {
+        return ovChipkaartList;
+    }
 
     public String toString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Choose the desired date format
