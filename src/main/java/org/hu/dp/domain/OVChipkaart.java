@@ -10,6 +10,7 @@ public class OVChipkaart {
     private int klasse;
     private double saldo;
     private int reizigerid;
+    private List<Product> productenLijst = new ArrayList<>();
 
     public OVChipkaart(int kaart_nummer, Date geldig_tot, int klasse, double saldo, int reizigerid) {
         this.kaart_nummer = kaart_nummer;
@@ -22,7 +23,6 @@ public class OVChipkaart {
     public int getKaart_nummer() {
         return kaart_nummer;
     }
-
     public Date getGeldig_tot() {
         return geldig_tot;
     }
@@ -38,7 +38,25 @@ public class OVChipkaart {
     public void setReizigerid(int reizigerid) {
         this.reizigerid = reizigerid;
     }
+    public void addProduct(Product product) {
+        productenLijst.add(product);
+    }
+    public List<Product> getProductenLijst() {
+        return productenLijst;
+    }
 
+    public void removeProduct(Product product) {
+        productenLijst.remove(product);
+    }
+
+    public Product getProduct(int id) {
+        for (Product product : productenLijst) {
+            if (product.getProduct_nummer() == id) {
+                return product;
+            }
+        }
+        return null;
+    }
 
     public String toString() {
         return "OVChipkaart{" +

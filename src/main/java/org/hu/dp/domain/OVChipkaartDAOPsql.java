@@ -2,12 +2,14 @@ package org.hu.dp.domain;
 
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OVChipkaartDAOPsql implements  OVChipkaartDAO{
     private Connection conn;
     private ReizigerDAO rdao;
+    private ProductDAO pdao;
 
     public OVChipkaartDAOPsql(Connection conn) {
         this.conn = conn;
@@ -55,9 +57,22 @@ public class OVChipkaartDAOPsql implements  OVChipkaartDAO{
                 pst.setInt(4, ovChipkaart.getReizigerid());
                 pst.setInt(5, ovChipkaart.getKaart_nummer());
                 pst.execute();
+//              Conceptueel probleem: Data wordt goed gepersisteerd en geupdate maar de relaties in het domein worden niet geupdate
+            //  evt op te lossen door het oude ovchipkaart uit de ovchipkaartenlijst te halen in product en de nieuwe eraan toe te voegen.
+//                if (this.pdao != null) {
+//                    for (Product product : ovChipkaart.getProductenLijst()) {
+//                        OVChipkaart oudeOvKaart = product.getOvChipkaartByNummer(ovChipkaart.getKaart_nummer());
+//                        if (oudeOvKaart != null) {
+//                            product.removeOvChipkaart(oudeOvKaart);
+//                            product.addOvChipkaart(ovChipkaart);
+//                        }
+//                    }
+//                }
                 pst.close();
+
                 return true;
                 }
+
             catch (SQLException e) {
                 System.err.println("Error in update() OVChipkaartDAOPsql" + e);
                 return false;
@@ -66,14 +81,27 @@ public class OVChipkaartDAOPsql implements  OVChipkaartDAO{
 
         public boolean delete(OVChipkaart ovChipkaart) {
             try {
+                //delete uit linktabel EN verwijdert de OVchipkaart uit de ovchipkaartenlijst van product
+                if (rdao != null && ovChipkaart.getProductenLijst() != null) {
+                    for (Product product : ovChipkaart.getProductenLijst()) {
+                        PreparedStatement pst = conn.prepareStatement("DELETE FROM ov_chipkaart_product WHERE kaart_nummer = ? AND product_nummer = ?");
+                        pst.setInt(1, ovChipkaart.getKaart_nummer());
+                        pst.setInt(2, product.getProduct_nummer());
+                        product.removeOvChipkaart(ovChipkaart);
+                        pst.execute();
+                        pst.close();
+                    }
+                }
+
                 String statementString = """
                         DELETE FROM ov_chipkaart
                     WHERE kaart_nummer = ?""";
-            PreparedStatement pst = conn.prepareStatement(statementString);
-            pst.setInt(1, ovChipkaart.getKaart_nummer());
-            pst.execute();
-            pst.close();
-            return true;
+
+                PreparedStatement pst = conn.prepareStatement(statementString);
+                pst.setInt(1, ovChipkaart.getKaart_nummer());
+                pst.execute();
+                pst.close();
+                return true;
         } catch (SQLException e) {
             System.err.println("Error in delete() OVChipkaartDAOPsql" + e);
             return false;
@@ -180,6 +208,13 @@ public class OVChipkaartDAOPsql implements  OVChipkaartDAO{
 
         public void setRdao(ReizigerDAO rdao) {
             this.rdao = rdao;
+        }
+
+        public ProductDAO getPdao() {
+            return pdao;
+        }
+        public void setPdao(ProductDAO pdao) {
+            this.pdao = pdao;
         }
 
 }

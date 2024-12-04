@@ -154,6 +154,57 @@ public class Main {
         odao.getRdao().delete(reiziger1);
     }
 
+    private static void testProductDAO(ProductDAO pdao) throws SQLException {
+        System.out.println("\n---------- Test ProductDAO -------------");
+
+
+        // Initialisatie van objecten om mee te testen.
+        OVChipkaart ov7 = new OVChipkaart(77777, java.sql.Date.valueOf("2021-01-01"), 1, 50.00, 5);
+        
+        // Slaat een nieuw product op in de database en koppelt deze aan de ovchipkaart
+        Product product1 = new Product(7, "Weekend Vrij", "Gratis reizen in het weekend", 10.00);
+        Product product2 = new Product(8, "Alleen staan", "Alleen staan in het ov", 5.00);
+        ov7.addProduct(product1);
+        ov7.addProduct(product2);
+        product1.addOvChipkaart(ov7);
+        product2.addOvChipkaart(ov7);
+        pdao.getOdao().save(ov7);
+
+        System.out.println("[TEST] eerst " + pdao.findAll().size() + " producten");
+        pdao.save(product1);
+        pdao.save(product2);
+        System.out.println("na twee keer pdao.save: " + pdao.findAll().size() + " producten\n");
+
+        // Test findByOVChipkaart van product
+        System.out.println("[TEST] findByOVChipkaart() geeft de volgende producten:");
+        System.out.println(pdao.findByOVChipkaart(ov7));
+
+
+        // Test update van product
+        System.out.println("\n[TEST] update, product:\n " + product2);
+        Product product3 = new Product(product2.getProduct_nummer(), "Doordeweeks vrij", "Gratis reizen doordeweeks", 199.00);
+        pdao.update(product3);
+        System.out.println("na update: " + pdao.findByOVChipkaart(ov7).get(1));
+        ;
+
+        // Test findAll van product
+        System.out.println("\n[TEST] findAll() geeft de volgende producten:\n");
+        for (Product product : pdao.findAll()) {
+            System.out.println(product.toString());
+        }
+
+
+        // Test delete van product
+        System.out.println("\n[TEST] delete, eerst " + pdao.findAll().size() + " producten" );
+        pdao.getOdao().delete(ov7);
+        pdao.delete(product1);
+        pdao.delete(product2);
+        System.out.println("Na 2 keer pdao.delete: " + pdao.findAll().size() + " producten\n");
+
+        // delete de aangemaakte ovchipkaart
+        pdao.getOdao().delete(ov7);
+    }
+
 
 
     public static void main(String[] args) throws SQLException {
@@ -166,13 +217,19 @@ public class Main {
         ReizigerDAOPsql reizigerDAO = new ReizigerDAOPsql(connection);
         AdresDAOPsql adresDAO = new AdresDAOPsql(connection);
         OVChipkaartDAOPsql OvchipkaartDAO = new OVChipkaartDAOPsql(connection);
+        ProductDAOsql productDAO = new ProductDAOsql(connection);
+
         reizigerDAO.setAdresDAO(adresDAO);
         adresDAO.setReizigerDAO(reizigerDAO);
         OvchipkaartDAO.setRdao(reizigerDAO);
+
+        productDAO.setOdao(OvchipkaartDAO);
+        OvchipkaartDAO.setPdao(productDAO);
         try {
 //            testReizigerDAO(reizigerDAO);
 //            testAdres(adresDAO);
-            testOVChipkaarten(OvchipkaartDAO);
+         //   testOVChipkaarten(OvchipkaartDAO);
+            testProductDAO(productDAO);
         } catch (SQLException e) {
             System.out.println("Er ging iets fout bij het testen" );
             e.printStackTrace();
@@ -183,8 +240,6 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Er ging iets mis bij het sluiten van de connectie");
         }
-
-
     }
 
 }

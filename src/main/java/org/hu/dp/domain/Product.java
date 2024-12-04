@@ -56,8 +56,18 @@ public class Product {
     public void addOvChipkaart(OVChipkaart ovChipkaart) {
         ovChipkaarten_product.add(ovChipkaart);
     }
+
     public void removeOvChipkaart(OVChipkaart ovChipkaart) {
         ovChipkaarten_product.remove(ovChipkaart);
+    }
+
+    public OVChipkaart getOvChipkaartByNummer(int nummer) {
+        for (OVChipkaart ovChipkaart : ovChipkaarten_product) {
+            if (ovChipkaart.getKaart_nummer() == nummer) {
+                return ovChipkaart;
+            }
+        }
+        return null;
     }
 
     public String toString() {
