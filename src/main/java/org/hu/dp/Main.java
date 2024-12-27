@@ -113,8 +113,8 @@ public class Main {
         Reiziger reiziger1 = new Reiziger(10, "K", "", "Kempers", java.sql.Date.valueOf("1995-03-14"));
         odao.getRdao().save(reiziger1);
 
-        OVChipkaart ov1 = new OVChipkaart(76545, java.sql.Date.valueOf("2021-01-01"), 1, 40.00, 10);
-        OVChipkaart ov2 = new OVChipkaart(84958, java.sql.Date.valueOf("2022-01-01"), 1, 80, 10);
+        OVChipkaart ov1 = new OVChipkaart(76545, java.sql.Date.valueOf("2021-01-01"), 1, 40.00, reiziger1);
+        OVChipkaart ov2 = new OVChipkaart(84958, java.sql.Date.valueOf("2022-01-01"), 1, 80, reiziger1);
 
         // Test save van ovchipkaart
         System.out.println("[TEST] eerst " + odao.findAll().size() + " ovchipkaarten");
@@ -127,7 +127,7 @@ public class Main {
 
         // Test update van ovchipkaart
         System.out.println("[TEST] update, ovchipkaart:\n " + odao.findbyKaartNummer(76545));
-        OVChipkaart ov3 = new OVChipkaart(76545, java.sql.Date.valueOf("2022-01-01"), 2, 50, 10);
+        OVChipkaart ov3 = new OVChipkaart(76545, java.sql.Date.valueOf("2022-01-01"), 2, 50, reiziger1);
         odao.update(ov3);
         System.out.println("na update: " + odao.findbyKaartNummer(76545));
 
@@ -146,7 +146,7 @@ public class Main {
 
         // Test delete van ovchipkaart
         System.out.println("\n[TEST] delete, eerst " + odao.findAll().size() + " ovchipkaarten" );
-        odao.getRdao().findById(ov1.getReizigerid()).getOvChipkaartList().remove(ov1);
+      //  odao.getRdao().findById(ov1.getReiziger().getOvChipkaartList().remove(ov1));
         odao.delete(ov1);
         System.out.println("Na odao.delete: " + odao.findAll().size() + " ovchipkaarten\n");
 
@@ -159,7 +159,7 @@ public class Main {
 
 
         // Initialisatie van objecten om mee te testen.
-        OVChipkaart ov7 = new OVChipkaart(77777, java.sql.Date.valueOf("2021-01-01"), 1, 50.00, 5);
+        OVChipkaart ov7 = new OVChipkaart(77777, java.sql.Date.valueOf("2021-01-01"), 1, 50.00, pdao.getOdao().getRdao().findAll().get(0));
         
         // Slaat een nieuw product op in de database en koppelt deze aan de ovchipkaart
         Product product1 = new Product(7, "Weekend Vrij", "Gratis reizen in het weekend", 10.00);
@@ -227,9 +227,9 @@ public class Main {
         OvchipkaartDAO.setPdao(productDAO);
         try {
 //            testReizigerDAO(reizigerDAO);
-//            testAdres(adresDAO);
+            testAdres(adresDAO);
          //   testOVChipkaarten(OvchipkaartDAO);
-            testProductDAO(productDAO);
+           // testProductDAO(productDAO);
         } catch (SQLException e) {
             System.out.println("Er ging iets fout bij het testen" );
             e.printStackTrace();

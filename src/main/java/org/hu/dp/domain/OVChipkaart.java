@@ -9,15 +9,15 @@ public class OVChipkaart {
     private Date geldig_tot;
     private int klasse;
     private double saldo;
-    private int reizigerid;
+    private Reiziger reiziger;
     private List<Product> productenLijst = new ArrayList<>();
 
-    public OVChipkaart(int kaart_nummer, Date geldig_tot, int klasse, double saldo, int reizigerid) {
+    public OVChipkaart(int kaart_nummer, Date geldig_tot, int klasse, double saldo, Reiziger reiziger) {
         this.kaart_nummer = kaart_nummer;
         this.geldig_tot = geldig_tot;
         this.klasse = klasse;
         this.saldo = saldo;
-        this.reizigerid = reizigerid;
+        this.reiziger = reiziger;
     }
 
     public int getKaart_nummer() {
@@ -32,11 +32,11 @@ public class OVChipkaart {
     public double getSaldo() {
         return saldo;
     }
-    public int getReizigerid() {
-        return reizigerid;
+    public Reiziger getReiziger() {
+        return reiziger;
     }
-    public void setReizigerid(int reizigerid) {
-        this.reizigerid = reizigerid;
+    public void setReiziger(Reiziger reiziger) {
+        this.reiziger = reiziger;
     }
     public void addProduct(Product product) {
         productenLijst.add(product);
@@ -64,7 +64,7 @@ public class OVChipkaart {
                 ", geldig_tot=" + geldig_tot +
                 ", klasse=" + klasse +
                 ", saldo=" + saldo +
-                ", reiziger_id=" + reizigerid +
+                ", reiziger_id=" + reiziger.getReiziger_id() +
                 '}';
     }
 }

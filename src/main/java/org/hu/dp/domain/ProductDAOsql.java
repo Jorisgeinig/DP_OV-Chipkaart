@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductDAOsql implements ProductDAO{
+public class ProductDAOsql implements ProductDAO {
     private Connection conn;
     private OVChipkaartDAO odao;
 
@@ -24,7 +24,7 @@ public class ProductDAOsql implements ProductDAO{
             pst.close();
 
             // Opslaan in koppeltabel, ProductDAOsql heeft de verantwoordelijkheid over die tabel.
-            if(this.odao != null && product.getOvChipkaarten() != null) {
+            if (this.odao != null && product.getOvChipkaarten() != null) {
                 for (OVChipkaart ovChipkaart : product.getOvChipkaarten()) {
                     pst = conn.prepareStatement("INSERT INTO ov_chipkaart_product(kaart_nummer, product_nummer, status, last_update) VALUES (?, ?, ?, ?)");
                     pst.setInt(1, ovChipkaart.getKaart_nummer());
@@ -55,8 +55,8 @@ public class ProductDAOsql implements ProductDAO{
                 for (OVChipkaart ovChipkaart : product.getOvChipkaarten()) {
 
                     //Concept hoe het product ook in het OvChipkaart domein goed wordt aangepasst
-                   // ovChipkaart.removeProduct(ovChipkaart.getProduct(product.getProduct_nummer()));
-                 //   ovChipkaart.addProduct(product);
+                    // ovChipkaart.removeProduct(ovChipkaart.getProduct(product.getProduct_nummer()));
+                    //   ovChipkaart.addProduct(product);
 
                     //update ook koppeltabel
                     if (odao.findAll().contains(ovChipkaart)) {
@@ -89,16 +89,17 @@ public class ProductDAOsql implements ProductDAO{
                     pst.close();
                 }
             }
-        PreparedStatement pst = conn.prepareStatement("DELETE FROM product WHERE product_nummer = ?");
-        pst.setInt(1, product.getProduct_nummer());
-        pst.execute();
-        pst.close();
-        return true;
+            PreparedStatement pst = conn.prepareStatement("DELETE FROM product WHERE product_nummer = ?");
+            pst.setInt(1, product.getProduct_nummer());
+            pst.execute();
+            pst.close();
+            return true;
         } catch (SQLException e) {
             System.err.println("Error in delete() ProductDAOPsql" + e);
             return false;
         }
     }
+
 
     public List<Product> findByOVChipkaart(OVChipkaart ovChipkaart) {
         try {
